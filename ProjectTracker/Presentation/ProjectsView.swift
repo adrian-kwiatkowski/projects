@@ -60,6 +60,11 @@ class ProjectsView: UIView, UITableViewDelegate {
                 cell.accessoryView = button
                 button.sizeToFit()
             }.disposed(by: viewModel.disposeBag)
+        
+        tableView.rx.modelDeleted(Project.self)
+            .bind(onNext: { [weak self] in
+                self?.viewModel.removeProject(with: $0.name)
+            }).disposed(by: viewModel.disposeBag)
     }
     
     @objc private func appWillEnterBackground() {

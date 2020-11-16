@@ -24,6 +24,16 @@ class ProjectsViewModel {
         
         debugPrint("Adding new project: \(projectName)")
         projects.accept(existingProjects)
+        saveToJsonFile()
+    }
+    
+    func removeProject(with name: String) {
+        guard let projectToDeleteIndex = projects.value.firstIndex(where: { $0.name == name }) else { return }
+        var existingProjects = projects.value
+        existingProjects.remove(at: projectToDeleteIndex)
+        existingProjects.sort { $0.name < $1.name }
+        projects.accept(existingProjects)
+        saveToJsonFile()
     }
     
     func projectSelected(_ project: Project) {

@@ -31,8 +31,11 @@ class ProjectsViewController: UIViewController {
         }
         
         let submitAction = UIAlertAction(title: "Confirm", style: .cancel) { [weak self] _ in
-            guard let projectName = self?.alertController.textFields?.first?.text else { return }
+            guard let textField = self?.alertController.textFields?.first,
+                  let projectName = textField.text else { return }
             self?.mainView.addNewProjectTapped(with: projectName)
+            textField.text?.removeAll()
+            textField.sendActions(for: .editingChanged)
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in

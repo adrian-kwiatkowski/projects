@@ -24,7 +24,7 @@ class ProjectsView: UIView, UITableViewDelegate {
     private func setupUI() {
         addSubview(tableView)
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: String(describing: UITableViewCell.self))
+        tableView.register(ProjectTableViewCell.self, forCellReuseIdentifier: String(describing: ProjectTableViewCell.self))
         tableView.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
@@ -46,19 +46,8 @@ class ProjectsView: UIView, UITableViewDelegate {
     
     private func bindUI() {
         viewModel.projects.asDriver()
-            .drive(tableView.rx.items(cellIdentifier: String(describing: UITableViewCell.self), cellType: UITableViewCell.self)) { (row, element, cell) in
-                var configuration = cell.defaultContentConfiguration()
-                configuration.text = element.name
-                configuration.secondaryText = "\(element.timeSpent)"
-                cell.contentConfiguration = configuration
-                cell.selectionStyle = .none
-                let button = UIButton(type: .system)
-                button.setImage(UIImage(systemName: element.isActive ? "pause.circle" : "play.circle"), for: [])
-                button.rx.tap.bind(onNext: {
-                    self.viewModel.projectSelected(element)
-                }).disposed(by: self.viewModel.disposeBag)
-                cell.accessoryView = button
-                button.sizeToFit()
+            .drive(tableView.rx.items(cellIdentifier: String(describing: ProjectTableViewCell.self), cellType: ProjectTableViewCell.self)) { (row, element, cell) in
+                cell.configure(with: element, action: { self.viewModel.projectSelected(element) })
             }.disposed(by: viewModel.disposeBag)
         
         tableView.rx.modelDeleted(Project.self)

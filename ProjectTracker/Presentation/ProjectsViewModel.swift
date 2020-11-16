@@ -34,14 +34,25 @@ class ProjectsViewModel {
         existingProjects.sort { $0.name < $1.name }
         projects.accept(existingProjects)
         saveToJsonFile()
+        debugPrint("Removed project: \(name)")
     }
     
     func projectSelected(_ project: Project) {
         guard let modifiedProjectIndex = projects.value.firstIndex(where: { $0.name == project.name }) else { return }
         var modifiedProjects = projects.value
+                
+        if modifiedProjects[modifiedProjectIndex].isActive {
+            modifiedProjects[modifiedProjectIndex].timeSpent += Int(Date().timeIntervalSince(modifiedProjects[modifiedProjectIndex].startedAt ?? Date()))
+            modifiedProjects[modifiedProjectIndex].startedAt = nil
+        } else {
+            modifiedProjects[modifiedProjectIndex].startedAt = Date()
+        }
+        
         modifiedProjects[modifiedProjectIndex].isActive.toggle()
+        
         modifiedProjects.sort { $0.name < $1.name }
         projects.accept(modifiedProjects)
+        saveToJsonFile()
     }
     
     func saveToJsonFile() {
@@ -64,9 +75,9 @@ class ProjectsViewModel {
                 .appendingPathComponent("projects.json")
             
             let data = try Data(contentsOf: fileURL)
-            var foo = try JSONDecoder().decode([Project].self, from: data)
-            foo.sort { $0.name < $1.name }
-            projects.accept(foo)
+            var decodedProjects = try JSONDecoder().decode([Project].self, from: data)
+            decodedProjects.sort { $0.name < $1.name }
+            projects.accept(decodedProjects)
         } catch {
             debugPrint(error.localizedDescription)
         }

@@ -3,7 +3,7 @@
     {
       "color" : {
         "platform" : "ios",
-        "reference" : "systemGreenColor"
+        "reference" : "systemBackgroundColor"
       },
       "idiom" : "universal"
     },
@@ -16,7 +16,7 @@
       ],
       "color" : {
         "platform" : "ios",
-        "reference" : "systemPurpleColor"
+        "reference" : "systemBackgroundColor"
       },
       "idiom" : "universal"
     }
